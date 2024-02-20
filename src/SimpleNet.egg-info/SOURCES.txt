@@ -1,0 +1,12 @@
+LICENSE
+README.md
+setup.py
+src/SimpleNet/__init__.py
+src/SimpleNet/activation_functions.py
+src/SimpleNet/matrix_math.py
+src/SimpleNet/nn.py
+src/SimpleNet/utils.py
+src/SimpleNet.egg-info/PKG-INFO
+src/SimpleNet.egg-info/SOURCES.txt
+src/SimpleNet.egg-info/dependency_links.txt
+src/SimpleNet.egg-info/top_level.txt

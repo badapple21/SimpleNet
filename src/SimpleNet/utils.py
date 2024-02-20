@@ -16,7 +16,7 @@ def get_max(x):
 def load_MNIST():
     import os
     print(os.getcwd())
-    mndata = MNIST("samples")
+    mndata = MNIST("src\simpleNet\samples")
     images, labels = mndata.load_training()
     test_images, test_labels = mndata.load_testing()
 
