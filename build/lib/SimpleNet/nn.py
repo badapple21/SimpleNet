@@ -1,8 +1,17 @@
+# import matrix_math
+# import activation_functions
+# from utils import *
+
+from . import utils
+from . import activation_functions
 from . import matrix_math
+
 import numpy as np
 import pickle
-from .utils import *
-
+import time
+import os
+from rich.progress import track
+from rich import print
 
 class NeuralNetwork:
     def __init__(self, input_nodes, hidden_nodes, output_nodes, activation_function):
@@ -71,9 +80,12 @@ class NeuralNetwork:
             self.bias[1] = data[3]
 
     def save_net(self, path):
-        with open(f"{path}.pickle", "wb") as f:
-            pickle.dump(self.net, f)
-            f.close()
+        try:
+            with open(f"{path}.pickle", "wb") as f:
+                pickle.dump(self.net, f)
+                f.close()
+        except FileNotFoundError:
+            print("[bold red]COULD NOT SAVE NET: PATH NOT ACCESSIBLE")
 
     def feed_forward(self, input_array):
         # loads the input to a matrix
@@ -130,13 +142,12 @@ class NeuralNetwork:
             self.weights[len(self.weights) - (1 + i)].add((weight_deltas))
 
     def test_net(self, test_images, test_labels):
-        print("testing . . .")
 
         correct = 0
         total = 0
-        for i in range(len(test_images)):
+        for i in track(range(len(test_images)), description="[green]Testing: "):
             output = self.feed_forward(test_images[i])
-            if get_max(output[-1]) == test_labels[i]:
+            if utils.get_max(output[-1]) == test_labels[i]:
                 correct += 1
             total += 1
 
@@ -146,21 +157,36 @@ class NeuralNetwork:
         self, test_images, test_labels, train_images, train_labels, iterations
     ):
         test_accuracys = []
+        start_time = time.time()
+        os.system("cls")
 
         for j in range(iterations):
-            print("training . . .")
-            for i, image in enumerate(train_images):
-                self.train(image, get_correct(train_labels[i]))
-                print(f"{j},  {(i/len(train_images)*100)}")
+            for i, image in enumerate(
+                track(
+                    train_images,
+                    description=f"[green]Training Epoch {j+1}/{iterations}: ",
+                )
+            ):
+                self.train(image, utils.get_correct(train_labels[i]))
+                current_time = time.time()
 
-            print("testing . . . ")
-            test_accuracys.append(round(self.test_net(test_images, test_labels), 2))
+        test_accuracys.append(round(self.test_net(test_images, test_labels), 2))
 
         return test_accuracys
 
 
 def main():
-    return
+    images, labels, test_images, test_labels = load_MNIST()
+
+    hidden_layers = [1, 1]
+
+    network = NeuralNetwork(
+        784, hidden_layers, 10, activation_functions.sigmoid
+    )  # creates network
+    accuracy = network.test_and_train(test_images, test_labels, images, labels, 2)
+
+    print(accuracy)
+    network.save_net(f"src\SimpleNet\saved_nets\{hidden_layers} {accuracy[0]}")
 
 
 if __name__ == "__main__":

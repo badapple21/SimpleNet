@@ -5,6 +5,7 @@ src/SimpleNet/__init__.py
 src/SimpleNet/activation_functions.py
 src/SimpleNet/matrix_math.py
 src/SimpleNet/nn.py
+src/SimpleNet/test.py
 src/SimpleNet/utils.py
 src/SimpleNet.egg-info/PKG-INFO
 src/SimpleNet.egg-info/SOURCES.txt
