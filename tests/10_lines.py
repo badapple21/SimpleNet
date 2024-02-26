@@ -1,4 +1,4 @@
-import srcsimpleNet as sn
+import SimpleNet as sn
 
 images, labels, test_images, test_labels = sn.load_MNIST()
 hidden_layers = [1]

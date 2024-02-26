@@ -1,8 +1,10 @@
 import numpy as np
+import warnings
 
 
 def sigmoid(x):
-    return 1 / (1 + np.exp(-x))
+    warnings.filterwarnings("ignore")
+    return 1 / (1 + np.exp(-1 * np.float16(x)))
 
 
 def fake_desigmoid(x):

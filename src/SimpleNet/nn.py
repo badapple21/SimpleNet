@@ -1,7 +1,11 @@
-from . import matrix_math
+import matrix_math
+import activation_functions
 import numpy as np
 import pickle
-from .utils import *
+from utils import *
+import time
+import os
+from rich.progress import track 
 
 
 class NeuralNetwork:
@@ -130,11 +134,10 @@ class NeuralNetwork:
             self.weights[len(self.weights) - (1 + i)].add((weight_deltas))
 
     def test_net(self, test_images, test_labels):
-        print("testing . . .")
 
         correct = 0
         total = 0
-        for i in range(len(test_images)):
+        for i in track(range(len(test_images)), description="[green]Testing: "):
             output = self.feed_forward(test_images[i])
             if get_max(output[-1]) == test_labels[i]:
                 correct += 1
@@ -146,21 +149,32 @@ class NeuralNetwork:
         self, test_images, test_labels, train_images, train_labels, iterations
     ):
         test_accuracys = []
+        start_time = time.time()
+        os.system('cls')
 
         for j in range(iterations):
-            print("training . . .")
-            for i, image in enumerate(train_images):
+            for i, image in enumerate(track(train_images, description=f"[green]Training Epoch {j+1}/{iterations}: ")):
                 self.train(image, get_correct(train_labels[i]))
-                print(f"{j},  {(i/len(train_images)*100)}")
+                current_time = time.time()
+               
 
-            print("testing . . . ")
-            test_accuracys.append(round(self.test_net(test_images, test_labels), 2))
+        test_accuracys.append(round(self.test_net(test_images, test_labels), 2))
 
         return test_accuracys
 
 
 def main():
-    return
+    images, labels, test_images, test_labels = load_MNIST()
+
+
+    hidden_layers = [1, 1]
+
+
+    network = NeuralNetwork(784, hidden_layers, 10, activation_functions.sigmoid)  # creates network
+    accuracy = network.test_and_train(test_images, test_labels, images, labels, 2)
+
+    print(accuracy)
+    network.save_net(f"src\SimpleNet\saved_nets\{hidden_layers} {accuracy[0]}")
 
 
 if __name__ == "__main__":
