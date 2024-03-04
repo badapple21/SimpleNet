@@ -1,11 +1,12 @@
 import SimpleNet as sn
 from pathlib import Path
+
 images, labels, test_images, test_labels = sn.load_MNIST()
-hidden_layers = [1]
+hidden_layers = [16, 16]
 
 
 network = sn.NeuralNetwork(784, hidden_layers, 10, sn.sigmoid)  # creates network
-accuracy = network.test_and_train(test_images, test_labels, images, labels, 1)
+accuracy = network.test_and_train(test_images, test_labels, images, labels, 5)
 
 print(accuracy)
 

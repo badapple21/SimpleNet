@@ -7,16 +7,10 @@ class matrix:
     def __init__(self, rows, cols):
         self.rows = rows
         self.cols = cols
-        self.values = []
+        self.values = np.zeros(shape=(rows, cols))
 
-        for i in range(rows):
-            self.values.append([])
-            for j in range(cols):
-                self.values[i].append(0)
-    
     def multiply(self, n):
-        if(type(n)==matrix):
-
+        if type(n) == matrix:
             result = np.multiply(self.values, n.values)
             self.values = result
 
@@ -34,10 +28,10 @@ class matrix:
                 self.values[i][j] = fn(val)
 
     def add(self, n):
-        if type(n)==matrix:
-         
-             result = np.add(self.values, n.values)
-             self.values = result
+        if type(n) == matrix:
+
+            result = np.add(self.values, n.values)
+            self.values = result
 
         else:
             for i in range(self.rows):
@@ -47,11 +41,8 @@ class matrix:
     def randomize(self, multiplier):
         for i in range(self.rows):
             for j in range(self.cols):
-                self.values[i][j] = random.uniform(-1*multiplier, 1*multiplier)
+                self.values[i][j] = random.uniform(-1 * multiplier, 1 * multiplier)
 
-
-
-    
     def to_array(self):
         arr = []
         for i in range(self.rows):
@@ -79,12 +70,14 @@ def map(a, fn):
 
     return result
 
+
 def transpose(a):
     result = matrix(a.cols, a.rows)
 
     result.values = np.array(a.values).transpose()
-    
+
     return result
+
 
 def from_array(arr):
     m = matrix(len(arr), 1)
@@ -93,18 +86,20 @@ def from_array(arr):
 
     return m
 
+
 def subtract(a, b):
     result = matrix(a.rows, a.cols)
     result.values = np.subtract(a.values, b.values)
 
     return result
 
+
 def multiply(a, b):
-    #Matrix Product
+    # Matrix Product
     if a.cols != b.rows:
         print("Matrix Multiply Size miss match(cols must = rows)")
         return False
-    
+
     result = matrix(a.rows, b.cols)
 
     result.values = np.dot(a.values, b.values)
@@ -114,7 +109,6 @@ def multiply(a, b):
 
 def main():
     pass
-
 
 
 if __name__ == "__main__":

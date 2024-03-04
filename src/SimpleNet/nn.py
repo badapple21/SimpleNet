@@ -1,6 +1,6 @@
 # import matrix_math
 # import activation_functions
-# from utils import *
+# import utils
 
 from . import utils
 from . import activation_functions
@@ -12,6 +12,7 @@ import time
 import os
 from rich.progress import track
 from rich import print
+
 
 class NeuralNetwork:
     def __init__(self, input_nodes, hidden_nodes, output_nodes, activation_function):
