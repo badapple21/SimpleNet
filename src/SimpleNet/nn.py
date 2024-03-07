@@ -1,10 +1,10 @@
-# import matrix_math
-# import activation_functions
-# import utils
+import matrix_math
+import activation_functions
+import utils
 
-from . import utils
-from . import activation_functions
-from . import matrix_math
+# from . import utils
+# from . import activation_functions
+# from . import matrix_math
 
 import numpy as np
 import pickle
@@ -80,13 +80,13 @@ class NeuralNetwork:
             self.bias[0] = data[2]
             self.bias[1] = data[3]
 
-    def save_net(self, path):
-        try:
-            with open(f"{path}.pickle", "wb") as f:
-                pickle.dump(self.net, f)
-                f.close()
-        except FileNotFoundError:
-            print("[bold red]COULD NOT SAVE NET: PATH NOT ACCESSIBLE")
+    def save_net(self, path, file_name):
+        if not os.path.exists(path):
+            os.mkdir(path)
+
+        with open(f"{path}/{file_name}.pickle", "wb") as f:
+            pickle.dump(self.net, f)
+            f.close()
 
     def feed_forward(self, input_array):
         # loads the input to a matrix

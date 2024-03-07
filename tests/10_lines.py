@@ -2,7 +2,7 @@ import SimpleNet as sn
 from pathlib import Path
 
 images, labels, test_images, test_labels = sn.load_MNIST()
-hidden_layers = [16, 16]
+hidden_layers = [1]
 
 
 network = sn.NeuralNetwork(784, hidden_layers, 10, sn.sigmoid)  # creates network
