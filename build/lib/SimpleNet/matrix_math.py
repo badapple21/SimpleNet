@@ -1,8 +1,15 @@
 import random
 import numpy as np
+# from numba.experimental import jitclass
+# from numba import int32, typeof
 
 
+# value_spec = np.zeros(shape=(6, 5))
 
+# spec = [("rows", int32), ("cols", int32), ("values", typeof(value_spec))]
+
+
+# @jitclass(spec)
 class matrix:
     def __init__(self, rows, cols):
         self.rows = rows
@@ -29,7 +36,6 @@ class matrix:
 
     def add(self, n):
         if type(n) == matrix:
-
             result = np.add(self.values, n.values)
             self.values = result
 

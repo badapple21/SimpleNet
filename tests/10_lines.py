@@ -6,10 +6,10 @@ hidden_layers = [1]
 
 
 network = sn.NeuralNetwork(784, hidden_layers, 10, sn.sigmoid)  # creates network
-accuracy = network.test_and_train(test_images, test_labels, images, labels, 5)
+accuracy = network.test_and_train(test_images, test_labels, images, labels, 1)
 
 print(accuracy)
 
 file_path = Path(__file__)
 file_dir = file_path.parent
-network.save_net(f"{file_dir}\saved_nets\{hidden_layers} {accuracy[0]}")
+network.save_net(f"{file_dir}/saved_nets2/", f"{hidden_layers}_{accuracy[0]}")
