@@ -25,5 +25,12 @@ def leaky_relu(x):
         return 0.01 * x
 
 
+def de_leaky_relu(x):
+    if x < 0:
+        return 0.01
+    else:
+        return 1
+
+
 def tanh(x):
     return 2 / (1 + np.exp(-2 * x))

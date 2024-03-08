@@ -15,7 +15,7 @@ from rich import print
 
 
 class NeuralNetwork:
-    def __init__(self, input_nodes, hidden_nodes, output_nodes, activation_function):
+    def __init__(self, input_nodes, hidden_nodes, output_nodes, activation_function, activation_function_derivative):
         # num of neurons for each layer
         self.input_nodes = input_nodes
         self.output_nodes = output_nodes
@@ -55,9 +55,10 @@ class NeuralNetwork:
         self.bias[-1].randomize(10)
 
         # sets learning rate
-        self.learning_rate = 0.3
+        self.learning_rate = 0.1
 
         self.activation_function = activation_function
+        self.activation_function_derivative = activation_function_derivative
 
         self.net = [self.weights, self.bias]
 
@@ -130,6 +131,10 @@ class NeuralNetwork:
             # calculates the gradient by  multiplying the activation of the layer by the error of the next layer times the learning rate
             gradients = activations[len(activations) - (i + 1)]
             gradients = matrix_math.from_array(gradients)
+
+            # multiply the error with the derivative of the activation function
+            gradients.map(self.activation_function_derivative)
+
             gradients.multiply(errors[i])
             gradients.multiply(self.learning_rate)
 
