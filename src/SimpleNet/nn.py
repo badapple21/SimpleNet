@@ -1,10 +1,10 @@
-# import matrix_math
-# import activation_functions
-# import utils
+import matrix_math
+import activation_functions
+import utils
 
-from . import utils
-from . import activation_functions
-from . import matrix_math
+# from . import utils
+# from . import activation_functions
+# from . import matrix_math
 
 import numpy as np
 import pickle
@@ -12,16 +12,32 @@ import time
 import os
 from rich.progress import track
 from rich import print
+import random
 
 
 class NeuralNetwork:
-    def __init__(self, input_nodes, hidden_nodes, output_nodes, activation_function, activation_function_derivative):
+    def __init__(
+        self,
+        input_nodes,
+        hidden_nodes,
+        output_nodes,
+        activation_function,
+        activation_function_derivative,
+        bias_multiplier=1,
+        weight_multiplier=0.1,
+        learning_rate=0.1,
+        learning_rate_decay=0.01,
+    ):
         # num of neurons for each layer
         self.input_nodes = input_nodes
         self.output_nodes = output_nodes
         self.hidden_nodes = hidden_nodes
-        self.bias_multiplier = 10
-        self.weight_multiplier = 0.1
+
+        # PRESETS
+        self.bias_multiplier = bias_multiplier
+        self.weight_multiplier = weight_multiplier
+        self.learning_rate = learning_rate
+        self.learning_rate_decay = learning_rate_decay
 
         self.weights = []
 
@@ -41,21 +57,18 @@ class NeuralNetwork:
 
             # adds the matrix to the list randomizes the weights to a between -1 and 1 times the multiplier
             self.weights.append(matrix_math.matrix(x, y))
-            self.weights[i].randomize(0.1)
+            self.weights[i].randomize(self.weight_multiplier)
 
         # loops through the num of hidden layers and creates a 1d matrix of the biases with a random value from -1 to 1 times the multiplier
         self.bias = []
 
         for i in range(len(self.hidden_nodes)):
             self.bias.append(matrix_math.matrix(hidden_nodes[i], 1))
-            self.bias[i].randomize(10)
+            self.bias[i].randomize(self.bias_multiplier)
 
         # adds the bias matrix for the outputs
         self.bias.append(matrix_math.matrix(output_nodes, 1))
-        self.bias[-1].randomize(10)
-
-        # sets learning rate
-        self.learning_rate = 0.1
+        self.bias[-1].randomize(self.bias_multiplier)
 
         self.activation_function = activation_function
         self.activation_function_derivative = activation_function_derivative
@@ -108,44 +121,38 @@ class NeuralNetwork:
         return rtn
 
     def train(self, inputs_array, targets_array):
-        # feeds the input through the net using the feed forward function
-        activations = self.feed_forward(inputs_array)
+        outputs = self.feed_forward(inputs_array)
 
-        errors = [
-            matrix_math.subtract(
-                matrix_math.from_array(targets_array),
-                matrix_math.from_array(activations[-1]),
+        targets = matrix_math.from_array(targets_array)
+
+        layer_outputs = matrix_math.from_array(outputs[-1])
+
+        errors = [matrix_math.subtract(targets, layer_outputs)]
+
+        for i, weights in reversed(list(enumerate(self.weights[1:]))):
+            weights_t = matrix_math.transpose(weights)
+            error = matrix_math.multiply(weights_t, errors[0])
+
+            errors.insert(0, error)
+
+        for j, error in enumerate(errors):
+            gradient = matrix_math.map(
+                matrix_math.from_array(outputs[j + 1]),
+                self.activation_function_derivative,
             )
-        ]
 
-        # calculates the gradients and bias for each layer then it adds the gradients to the current layer
-        for i in range(len(activations) - 1):
-            # subtracts the targets and outputs to get the error
-            errors.append(
-                matrix_math.multiply(
-                    matrix_math.transpose(self.weights[len(activations) - (i + 2)]),
-                    errors[i],
-                )
-            )
+            # gradient = matrix_math.from_array(outputs[j + 1])
 
-            # calculates the gradient by  multiplying the activation of the layer by the error of the next layer times the learning rate
-            gradients = activations[len(activations) - (i + 1)]
-            gradients = matrix_math.from_array(gradients)
+            gradient.multiply(error)
+            gradient.multiply(self.learning_rate)
 
-            # multiply the error with the derivative of the activation function
-            gradients.map(self.activation_function_derivative)
+            self.bias[j].add(gradient)
 
-            gradients.multiply(errors[i])
-            gradients.multiply(self.learning_rate)
+            output_t = matrix_math.from_array(outputs[j])
+            output_t = matrix_math.transpose(output_t)
+            delta = matrix_math.multiply(gradient, output_t)
 
-            # calculates the deltas by multiplying the gradients by the weight
-            activations_t = matrix_math.transpose(
-                matrix_math.from_array(activations[len(activations) - (i + 2)])
-            )
-            weight_deltas = matrix_math.multiply(gradients, activations_t)
-
-            # adds the deltas and the gradients to the weights and bias
-            self.weights[len(self.weights) - (1 + i)].add((weight_deltas))
+            self.weights[j].add(delta)
 
     def test_net(self, test_images, test_labels):
 
@@ -176,23 +183,27 @@ class NeuralNetwork:
                 self.train(image, utils.get_correct(train_labels[i]))
                 current_time = time.time()
 
-        test_accuracys.append(round(self.test_net(test_images, test_labels), 2))
+            test_accuracys.append(round(self.test_net(test_images, test_labels), 2))
 
         return test_accuracys
 
 
 def main():
-    images, labels, test_images, test_labels = load_MNIST()
 
-    hidden_layers = [1, 1]
+    images, labels, test_images, test_labels = utils.load_MNIST()
+    hidden_layers = [16, 16]
 
     network = NeuralNetwork(
-        784, hidden_layers, 10, activation_functions.sigmoid
+        784,
+        hidden_layers,
+        10,
+        activation_functions.sigmoid,
+        activation_functions.fake_desigmoid,
+        learning_rate=0.03,
     )  # creates network
     accuracy = network.test_and_train(test_images, test_labels, images, labels, 2)
 
     print(accuracy)
-    network.save_net(f"src\SimpleNet\saved_nets\{hidden_layers} {accuracy[0]}")
 
 
 if __name__ == "__main__":

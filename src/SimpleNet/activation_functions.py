@@ -8,7 +8,7 @@ def sigmoid(x):
 
 
 def fake_desigmoid(x):
-    return x * (1 - x)
+    return sigmoid(x) * (1 - sigmoid(x))
 
 
 def relu(x):
@@ -22,15 +22,21 @@ def leaky_relu(x):
     if x > 0:
         return x
     else:
-        return 0.01 * x
+        return 0.001 * x
 
 
 def de_leaky_relu(x):
-    if x < 0:
-        return 0.01
-    else:
+    if x > 0:
         return 1
+    else:
+        return 0.001
 
 
 def tanh(x):
     return 2 / (1 + np.exp(-2 * x))
+
+def soft_max(x):
+    pass
+
+def arg_max(x): 
+    pass

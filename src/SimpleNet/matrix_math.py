@@ -1,5 +1,6 @@
 import random
 import numpy as np
+
 # from numba.experimental import jitclass
 # from numba import int32, typeof
 
@@ -28,7 +29,7 @@ class matrix:
                     self.values[i][j] *= n
 
     def map(self, fn):
-        # appyl a function to every element of a matrix
+        # appyly a function to every element of a matrix
         for i in range(self.rows):
             for j in range(self.cols):
                 val = self.values[i][j]
