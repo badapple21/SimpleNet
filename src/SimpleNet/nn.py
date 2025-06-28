@@ -1,10 +1,10 @@
-import matrix_math
-import activation_functions
-import utils
+# import matrix_math
+# import activation_functions
+# import utils
 
-# from . import utils
-# from . import activation_functions
-# from . import matrix_math
+from . import utils
+from . import activation_functions
+from . import matrix_math
 
 import numpy as np
 import pickle
